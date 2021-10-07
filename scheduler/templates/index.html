@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>mantime mainpage</title>
+
+  <!-- Bootstrap -->
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+
+  <!-- Font Awesome -->
+  <!--<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">-->
+  <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+
+  <!-- Timesetter -->
+  {% load static %}
+  <link href="{% static 'css/jquery.timesetter.min.css' %}" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.4/axios.min.js"></script>
+
+  <!--
+  <script charset="utf-8">
+    function newTask() {
+      var addMore = document.getElementById("add-more");
+      var sampleTask = document.getElementById("task1");
+      var newTaskNode = sampleTask.cloneNode(true);
+      var taskList = document.getElementById("list");
+
+      console.log(taskList.childElementCount);
+      var newTaskIdNum = taskList.childElementCount; // Eliminating the last button
+      newTaskNode.id = "task" + newTaskIdNum.toString();
+
+      var textNewNode = newTaskNode.getElementsByTagName("input")[0];
+
+      textNewNode.value = "";
+      textNewNode.id = textNewNode.id.replace(/\d*$/, newTaskIdNum.toString());
+
+      var focusNewNode = newTaskNode.getElementsByTagName("input")[1];
+      focusNewNode.id = focusNewNode.id.replace(/\d*$/, newTaskIdNum.toString());
+
+      taskList.insertBefore(newTaskNode, addMore);
+    }
+  </script>
+          v-bind.sync="item"
+  -->
+
+</head>
+<body>
+
+  <div id="main" class="container-fluid row bg-secondary" style="min-height: 100vh">
+    <div id="task-list-wrapper" class="col-5 align-self-center">
+      <div class="w-50 mx-auto my-3">
+        <h1 class="w-100 m-auto bg-primary">Add your task list</h1>
+      </div>
+      <div id="task-list" class="list-group w-75 mt-3 m-auto">
+        <task-list></task-list>
+        <!--<task-item
+          v-for="item in taskList"
+          :key="item.id"
+          @update:desc="item.desc = $event"
+          @change:focus="item.focus = $event"
+          @change:priority="item.priority = $event"
+        ></task-item>
+        <div id="add-more">
+          <button v-on:click="newTask" type="button" class="text-center list-group-item list-group-item-action">Add a new task</button>
+        </div>-->
+      </div>
+    </div>
+    <div id="calendar" class="col w-100">
+      In construction
+    </div>
+  </div>
+  <!--
+  <script>
+
+    $(function() {
+      $("#task-list").on("click", ".dropdown-item", function(){
+        // We are telling the function to execute in all .dropdown-item dynamically or
+        // statically created elements (dynamic child) that are inside the #task-list
+        // (static parent)
+
+        $(this).parents(".dropdown").find(".dropdown-toggle").text($(this).text());
+        $(this).parents(".dropdown").find(".dropdown-toggle").val($(this).text());
+      });
+    });
+
+    function test (item) {
+      console.log(item);
+    }
+
+    Vue.config.devtools=true;
+
+    var taskTemplate = `
+      <div class="list-group-item m-0">
+        <div class="row">
+          <div class="col-md-auto">
+            <input
+              type="text"
+              placeholder="Insert your task"
+              :value="desc"
+              @input="$emit('update:desc', $event.target.value)"
+              class="form-control"
+            />
+          </div>
+          <div class="col-md-auto justify-content-center">
+            <p class="m-0">Need focus?</p>
+            <input
+              type="checkbox"
+              v-bind:checked="focus"
+              v-on:change="$emit('change:focus', $event.target.checked)"
+              class="form-check-input mx-auto"
+            />
+          </div>
+          <div class="col-md-auto">
+            <select class="form-select" aria-label="Priority Selection">
+              <option selected>Priority</option>
+              <option value="high" @change="$emit('change:priority', $event.target.value)" >High</option>
+              <option value="medium" @change="$emit('change:priority', $event.target.value)" >Medium</option>
+              <option value="low" @change="$emit('change:priority', $event.target.value)" >Low</option>
+            </select>
+          </div>
+          <div class="col-md-auto">
+            <p class="m-0">Estimated duration</p>
+            <div class="task-duration" v-on:click="$emit('set-duration', $event)"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    Vue.component("task-item", {
+      delimiters: ["[[", "]]"], // Need to define them as the templating system interferes with Django's
+      props: {
+        id: Number,
+        desc: String,
+        priority: String,
+        duration: Number, // Duration in minutes
+        focus: Boolean
+      },
+      template: taskTemplate
+    });
+
+    var app = new Vue({
+      el: "#task-list",
+      delimiters: ["[[", "]]"], // Need to define them as the templating system interferes with Django's
+      data: {
+        taskList: [
+          { id: 1, desc: "", priority: "Priority", duration: 0, focus: false },
+          { id: 2, desc: "", priority: "Priority", duration: 0, focus: false },
+        ]
+      },
+      methods: {
+        newTask() {
+          this.taskList.push({ id: this.taskList.length + 1, desc: "", priority: "Priority", duration: 0, focus: false })
+          this.$nextTick(function() {
+            $(".task-duration").timesetter();
+          });
+        }
+      },
+      components: { TaskList }
+    });
+
+  </script>
+-->
+  <script type="text/javascript" src="{% static 'js/index.js' %}">
+  </script>
+
+  <script type="text/javascript" src="{% static 'js/jquery.timesetter.js' %}"></script>
+
+</body>
