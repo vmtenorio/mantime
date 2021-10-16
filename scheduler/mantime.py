@@ -71,7 +71,7 @@ ERR_DAY_TIME_EXCEED = "The length of all the tasks exceeds the time for the day 
 # TODO: set these as user parameters, customizable
 DAY_START_TIME = dt.time(hour=9)
 DAY_END_TIME = dt.time(hour=17)
-BUFFER_TIME = dt.timedelta(minutes=30)
+BUFFER_TIME = dt.timedelta(minutes=15)
 SHORTEST_FIRST = True
 
 def get_datetime(time):

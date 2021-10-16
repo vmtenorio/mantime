@@ -6,6 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import logging
 
+from .mantime import Mantime
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,18 @@ def index(request):
 @csrf_exempt
 def tasks(request):
     task_list = json.loads(request.body.decode('utf8'))
+
+    mantime = Mantime()
+    mantime.load(task_list)
+
+    mantime.schedule()
+
+    response = json.dumps(mantime.to_dict())
+    logger.info(response)
+    return HttpResponse(response)
+
+
+
     logger.info(task_list)
     return HttpResponse(task_list[0]['id'])
     return HttpResponse(json.loads(request.body.decode('utf8'))[0])#.replace("'", '"')))

@@ -29,7 +29,7 @@ var taskTemplate = `
             </div>
             <div class="col-md-auto">
                 <p class="m-0">Estimated duration:</p>
-                <div class="task-duration" @click="$emit('set-duration')"></div>
+                <div class="task-duration" @click="$emit('set-duration')" @input="$emit('set-duration')"></div>
             </div>
         </div>
     </div>
@@ -101,8 +101,33 @@ Vue.component("task-list", {
         sendData () {
             axios.post(TASK_API_URL, this.tasks)
                 .then(function (response) {
-                    console.log(response);
-                })
+                    var hour_start, min_start, hour_end, min_end;
+                    var start_time = new Date();
+                    start_time.setSeconds(0);
+                    var end_time = new Date();
+                    end_time.setSeconds(0);
+
+                    response.data.forEach(function (task) {
+                        hour_start = parseInt(task.start_time.split(':')[0])
+                        min_start = parseInt(task.start_time.split(':')[1])
+                        hour_end = parseInt(task.end_time.split(':')[0])
+                        min_end = parseInt(task.end_time.split(':')[1])
+
+                        start_time.setHours(hour_start);
+                        start_time.setMinutes(min_start);
+                        end_time.setHours(hour_end);
+                        end_time.setMinutes(min_end);
+
+                        task_obj = {
+                            id: task.id,
+                            title: task.desc,
+                            start: start_time.toISOString(),
+                            end: end_time.toISOString()
+                        }
+                        calendar.addEvent(task_obj);
+
+                    });
+                });
         }
     },
     template: listTemplate
