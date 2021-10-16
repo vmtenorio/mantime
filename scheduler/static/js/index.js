@@ -100,7 +100,9 @@ Vue.component("task-list", {
         },
         sendData () {
             axios.post(TASK_API_URL, this.tasks)
-                .then(function (response) {console.log(response);})
+                .then(function (response) {
+                    console.log(response);
+                })
         }
     },
     template: listTemplate
