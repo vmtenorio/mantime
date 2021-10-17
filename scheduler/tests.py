@@ -7,8 +7,8 @@ import datetime as dt
 class mantimeTests(TestCase):
 
     def test_2_tasks(self):
-        t1 = Task(1, "T1", "low", 90)
-        t2 = Task(2, "T2", "high", 15)
+        t1 = Task(1, "T1", "low", 90, False)
+        t2 = Task(2, "T2", "high", 15, False)
 
         mantime = Mantime(t1, t2)
 
@@ -37,11 +37,11 @@ class mantimeTests(TestCase):
         self.assertRaises(RuntimeError, mantime.schedule)
 
     def test_5_tasks(self):
-        t1 = Task(1, "T1", "low", 90)
-        t2 = Task(2, "T2", "low", 15)
-        t3 = Task(3, "T3", "high", 10)
-        t4 = Task(4, "T4", "medium", 60)
-        t5 = Task(5, "T5", "high", 30)
+        t1 = Task(1, "T1", "low", 90, False)
+        t2 = Task(2, "T2", "low", 15, False)
+        t3 = Task(3, "T3", "high", 10, False)
+        t4 = Task(4, "T4", "medium", 60, False)
+        t5 = Task(5, "T5", "high", 30, False)
 
         mantime = Mantime(t1, t2, t3, t4, t5)
 

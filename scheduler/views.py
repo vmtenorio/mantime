@@ -20,6 +20,9 @@ def index(request):
 
 @csrf_exempt
 def tasks(request):
+    if request.method != "POST":
+        return HttpResponse("Wrong Method", status=405)
+
     task_list = json.loads(request.body.decode('utf8'))
 
     mantime = Mantime()
@@ -28,16 +31,12 @@ def tasks(request):
     mantime.schedule()
 
     response = json.dumps(mantime.to_dict())
-    logger.info(response)
+    # logger.info(response)
     return HttpResponse(response)
 
-
-
-    logger.info(task_list)
-    return HttpResponse(task_list[0]['id'])
-    return HttpResponse(json.loads(request.body.decode('utf8'))[0])#.replace("'", '"')))
+@csrf_exempt
+def manual_task(request):
     if request.method != "POST":
-        return HttpResponse("Not Found", status=405)
-    
-    
-    return HttpResponse(dir(request))
+        return HttpResponse("Wrong Method", status=405)
+
+    return HttpResponse("A test")

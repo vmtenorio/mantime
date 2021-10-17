@@ -8,13 +8,14 @@ PRIORITIES = {
 }
 
 class Task:
-    def __init__(self, id, desc, priority, duration):
+    def __init__(self, id, desc, priority, duration, focus, start_time=None, end_time=None):
         self.id = id
         self.desc = desc
         self.priority = priority
         self.duration = duration
-        self.start_time = None
-        self.end_time = None
+        self.focus = focus
+        self.start_time = start_time
+        self.end_time = end_time
 
     def __lt__(self, other):
         if SHORTEST_FIRST and self.priority == other.priority:
@@ -33,7 +34,8 @@ class Mantime:
                 t["id"],
                 t["desc"],
                 t["priority"],
-                t["duration"]
+                t["duration"],
+                t["focus"]
             ))
     
     def to_dict(self):
@@ -44,6 +46,7 @@ class Mantime:
                 "desc": t.desc,
                 "priority": t.priority,
                 "duration": t.duration,
+                "focus": t.focus,
                 "start_time": t.start_time.strftime("%H:%M"),
                 "end_time": t.end_time.strftime("%H:%M")
             })
