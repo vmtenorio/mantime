@@ -82,21 +82,19 @@ Vue.component("task-list", {
                 $(".task-duration").timesetter();
             });
         },
+        manualTask(duration) {
+            var id = this.tasks.length + 1;
+            this.tasks.push({ id: id, desc: "", priority: "Priority", duration: duration, focus: false })
+
+            this.$nextTick(function() {
+                var newTimesetter = $(".task-duration").last()
+                newTimesetter.timesetter();
+                newTimesetter.setValuesByTotalMinutes(duration);
+            });
+        },
         setDuration (id) {
-
-            var container = $(".divTimeSetterContainer")[id-1];
-            var txtHour = $(container).find("#txtHours");
-            var txtMinute = $(container).find("#txtMinutes");
-
-            var hourValue = 0;
-            var minuteValue = 0;
-
-            if ($.isNumeric(txtHour.val()) && $.isNumeric(txtMinute.val()))
-            {
-                hourValue = parseInt(txtHour.val());
-                minuteValue = parseInt(txtMinute.val());
-            }
-            this.tasks[id-1].duration = ((hourValue * 60) + minuteValue);
+            var container = $(".task-duration").eq(id-1);
+            this.tasks[id-1].duration = container.getTotalMinutes();
         },
         sendData () {
             axios.post(TASK_API_URL, this.tasks)
@@ -118,11 +116,23 @@ Vue.component("task-list", {
                         end_time.setHours(hour_end);
                         end_time.setMinutes(min_end);
 
+                        console.log("Llego");
+                        var bgColor;
+                        if (task.focus) {
+                            bgColor = 'red';
+                        } else {
+                            bgColor =  '#3788d8';
+                        }
+
+                        console.log(bgColor);
+
                         task_obj = {
                             id: task.id,
                             title: task.desc,
                             start: start_time.toISOString(),
-                            end: end_time.toISOString()
+                            end: end_time.toISOString(),
+                            backgroundColor: bgColor,
+                            borderColor: bgColor,
                         }
                         calendar.addEvent(task_obj);
 
