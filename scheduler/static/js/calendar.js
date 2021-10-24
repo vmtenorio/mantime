@@ -1,10 +1,12 @@
 MANUAL_TASK_URL = 'manualTask';
 
 var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+
+var calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'timeGridDay',//'dayGridMonth'
     selectable: true,
-    selectMirror: true,
+    unselectAuto: false,
+    selectMirror: false,
     select: manualTask
 });
 
@@ -29,5 +31,11 @@ function manualTask (eventInfo) {
         //});
     });
 
+    var event = {
+        id: app.$children[0].tasks.length+1,
+        start: eventInfo.startStr,
+        end: eventInfo.endStr
+    }
+    calendar.addEvent(event);
 
 }
