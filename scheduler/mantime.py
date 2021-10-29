@@ -47,8 +47,8 @@ class Mantime:
                 "priority": t.priority,
                 "duration": t.duration,
                 "focus": t.focus,
-                "start_time": t.start_time.strftime("%H:%M"),
-                "end_time": t.end_time.strftime("%H:%M")
+                "start_time": t.start_time.isoformat(),#strftime("%H:%M"),
+                "end_time": t.end_time.isoformat(),#strftime("%H:%M")
             })
         return result
 

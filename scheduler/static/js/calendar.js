@@ -13,26 +13,27 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
 calendar.render();
 
 function manualTask (eventInfo) {
+
+    var duration = eventInfo.end - eventInfo.start;
+    var durationMins = duration / (1000*60);
+    app.$refs.tasklist.manualTask(durationMins);
+
+    var id = app.$refs.tasklist.maxId;
+
+    // Send to the API to store in database
     axios.post(MANUAL_TASK_URL, {
+        id: id,
         start_time: eventInfo.startStr,
-        end_time: eventInfo.endStr
-    }).then(function (response) {
-        var duration = eventInfo.end - eventInfo.start;
-        var durationMins = duration / (1000*60);
-        app.$children[0].manualTask(durationMins);
-
-
-        //app.$children[0].tasks.push({ // The first children is the task-list component
-            //id: app.$children[0].tasks.length++,
-            //desc: "",
-            //priority: "Medium",
-            //duration: durationMins,
-            //focus: false
-        //});
+        end_time: eventInfo.endStr,
+        duration: durationMins,
+        desc: '', // Default values
+        focus: false,
+        priority: 2
     });
 
+    // Create calendar event
     var event = {
-        id: app.$children[0].tasks.length+1,
+        id: id,
         start: eventInfo.startStr,
         end: eventInfo.endStr
     }

@@ -1,16 +1,24 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
-# Create your models here.
+LOW = 0
+NORMAL = 1
+HIGH = 2
+PRIORITY_CHOICES = (
+    (LOW, 'Low'),
+    (NORMAL, 'Normal'),
+    (HIGH, 'High'),
+)
 
-"""
 class Task(models.Model):
 
-    Priority = models.IntegerChoices("Priority", "LOW MEDIUM HIGH")
-
-    desc = models.CharField(max_length=60)
+    desc = models.CharField(max_length=64)
     focus = models.BooleanField(default=False)
-    priority = models.IntegerField(choices=Priority.choices)
-    duration = models.IntegerField(default=30)
-    #start_time = models.TimeField()
-    #end_time = models.TimeField()
-"""
+    priority = models.IntegerField(choices=PRIORITY_CHOICES)
+    duration = models.DurationField()
+    start_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True)
+
+    def clean(self):
+        if self.end_time != self.start_time + self.duration:
+            raise ValidationError("End time or duration is")

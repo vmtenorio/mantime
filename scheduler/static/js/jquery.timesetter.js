@@ -595,7 +595,7 @@
 On page load call the below code
 
 */
-
+/*
 $(document).ready(function () {
   var timesetterOptions = {
     hour: {
@@ -622,4 +622,4 @@ $(document).ready(function () {
   $(".task-duration").timesetter(timesetterOptions);
 
 });
-
+*/
