@@ -21,7 +21,6 @@ def index(request):
 
     return HttpResponse(template.render())
 
-@csrf_exempt
 def index_js(request):
     template_js = get_template("index.js")
 
@@ -42,16 +41,18 @@ def tasks(request):
         return HttpResponse("Wrong Method", status=405)
 
     task_list = json.loads(request.body.decode('utf8'))
-    for task in task_list:
-        task_obj = Task(**task)
-        task_obj.save()
-
+    
     mantime = Mantime()
     mantime.load(task_list)
 
     mantime.schedule()
 
-    response = json.dumps(mantime.to_dict())
+    tasks = mantime.to_dict()
+    for task in map(adapt_task, tasks):
+        task_obj = Task(**task)
+        task_obj.save()
+
+    response = json.dumps(tasks)
     # logger.info(response)
     return HttpResponse(response)
 
@@ -61,7 +62,7 @@ def manual_task(request):
         return HttpResponse("Wrong Method", status=405)
 
     task = json.loads(request.body.decode('utf8'))
-    logger.info(task)
+    # logger.info(task)
     task_obj = Task(**adapt_task(task))
     task_obj.save()
 
@@ -69,7 +70,6 @@ def manual_task(request):
 
 
 def adapt_task(task):
-    logger.info(task)
     return {
         'id': task['id'],
         'desc': task["desc"],

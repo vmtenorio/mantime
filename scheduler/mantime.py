@@ -21,7 +21,7 @@ class Task:
         if SHORTEST_FIRST and self.priority == other.priority:
             return self.duration > other.duration
         else:
-            return PRIORITIES[self.priority] < PRIORITIES[other.priority]
+            return self.priority < other.priority
 
 
 class Mantime:
@@ -33,7 +33,7 @@ class Mantime:
             self.tasks.append(Task(
                 t["id"],
                 t["desc"],
-                t["priority"],
+                int(t["priority"]),
                 t["duration"],
                 t["focus"]
             ))
@@ -47,23 +47,23 @@ class Mantime:
                 "priority": t.priority,
                 "duration": t.duration,
                 "focus": t.focus,
-                "start_time": t.start_time.isoformat(),#strftime("%H:%M"),
-                "end_time": t.end_time.isoformat(),#strftime("%H:%M")
+                "start_time": t.start_time.isoformat(),
+                "end_time": t.end_time.isoformat(),
             })
         return result
 
     def schedule(self):
         self.tasks.sort(reverse=True) # High first
 
-        start_time = DAY_START_TIME
+        start_time = get_datetime(DAY_START_TIME)
+        day_end_datetime = get_datetime(DAY_END_TIME)
         for t in self.tasks:
             t.start_time = start_time
-            start_datetime = get_datetime(start_time)
-            end_datetime = start_datetime + dt.timedelta(minutes=t.duration)
-            t.end_time = end_datetime.time()
-            if end_datetime.time() > DAY_END_TIME:
+            end_datetime = start_time + dt.timedelta(minutes=t.duration)
+            t.end_time = end_datetime
+            if end_datetime > day_end_datetime:
                 raise RuntimeError(ERR_DAY_TIME_EXCEED)
-            start_time = (end_datetime + BUFFER_TIME).time()
+            start_time = (end_datetime + BUFFER_TIME)
 
 
     

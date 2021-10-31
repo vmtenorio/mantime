@@ -9,6 +9,7 @@ var taskTemplate = `
                     placeholder="Insert your task"
                     @input="$emit('update:desc', $event.target.value)"
                     class="form-control"
+                    :value="desc"
                 />
             </div>
             <div class="col-md-auto justify-content-center">
@@ -21,10 +22,10 @@ var taskTemplate = `
             </div>
             <div class="col-md-auto mt-1">
                 <select class="form-select" aria-label="Priority Selection" @change="$emit('change:priority', $event.target.value)">
-                    <option value="2" disabled selected hidden>Priority</option>
-                    <option value="3">High</option>
-                    <option value="2">Medium</option>
-                    <option value="1">Low</option>
+                    <option value="1" disabled selected hidden>Priority</option>
+                    <option value="2">High</option>
+                    <option value="1">Medium</option>
+                    <option value="0">Low</option>
                 </select>
             </div>
             <div class="col-md-auto">
@@ -48,12 +49,13 @@ Vue.component("task-item", {
     template: taskTemplate
 });
 
-
+// TODO: tasks enlarge in calendar when duration increases
 var listTemplate = `
     <div id="task-list" class="list-group w-100 mt-3 m-auto">
         <task-item
             v-for="t in tasks"
             :key="t.id"
+            :desc="t.desc"
             @update:desc="t.desc = $event; if (t.inCalendar) {calendar.getEventById(t.id).setProp('title', $event);}"
             @change:focus="t.focus = $event"
             @change:priority="t.priority = $event"
@@ -76,7 +78,7 @@ Vue.component("task-list", {
                     id: {{ t.id }},
                     desc: "{{ t.desc }}",
                     priority: {{ t.priority }},
-                    duration: {% widthratio t.duration.total_seconds 60 1 %}, // Widthratio A B C computes C*A/B
+                    duration: {% widthratio t.duration.total_seconds 60 1 %}, // "Widthratio A B C" computes C*A/B
                     focus: {{ t.focus|yesno:"true,false" }}, // Need to be lowercase
                     start_time: "{{ t.start_time.isoformat }}",
                     end_time: "{{ t.end_time.isoformat }}",
@@ -91,29 +93,28 @@ Vue.component("task-list", {
     },
     mounted () {
         this.$nextTick(function() {
-            var timesetters = $(".task-duration");
             for (var i = 0; i < this.tasks.length; i++){
                 // Create calendar events for already loaded tasks
                 createCalendarEvent(this.tasks[i])
 
                 // Set durations in the timesetter
-                var timesetterContainer = timesetters.eq(i);
+                var timesetterContainer = $(".task-duration").eq(i);
+                timesetterContainer.timesetter();
                 timesetterContainer.setValuesByTotalMinutes(this.tasks[i].duration);
             }
-            timesetters.timesetter();
         });
     },
     methods: {
         newTask() {
             this.maxId++;
-            this.tasks.push({ id: this.maxId, desc: "", priority: 2, duration: 0, focus: false, inCalendar: false })
+            this.tasks.push({ id: this.maxId, desc: "", priority: 2, duration: 0, focus: false, start_time: null, end_time: null, inCalendar: false })
             this.$nextTick(function() {
-                $(".task-duration").timesetter();
+                $(".task-duration").last().timesetter();
             });
         },
         manualTask(duration) {
             this.maxId++;
-            this.tasks.push({ id: this.maxId, desc: "", priority: 2, duration: duration, focus: false, inCalendar: true })
+            this.tasks.push({ id: this.maxId, desc: "", priority: 2, duration: duration, focus: false, start_time: null, end_time: null, inCalendar: true })
 
             this.$nextTick(function() {
                 var newTimesetter = $(".task-duration").last()
@@ -130,6 +131,10 @@ Vue.component("task-list", {
                 .then(function (response) {
                     response.data.forEach(createCalendarEvent);
                 });
+            
+            for (var i = 0; i < this.tasks.length; i++) {
+                this.tasks[i].inCalendar = true;
+            }
         }
     },
     template: listTemplate
@@ -166,7 +171,7 @@ function createCalendarEvent (task) {
     } else if (task.priority === "high") {
         bgColor = 'red'
     } else { // medium or default
-        bgColor =  'blue';//'#3788d8';
+        bgColor =  '#3788d8';//'blue';
     }
 
     var task_obj = {
